@@ -71,7 +71,7 @@ fn main() -> ! {
         led_pin.set_high().unwrap();
 
         // Send our data woooshing down the line with a 0x00 start code
-        dmx.send(0x00, &[0xff, 0xaa, 0xff, 0xaa]);
+        dmx.send_blocking(0x00, &[0xff, 0xaa, 0xff, 0xaa]);
         led_pin.set_low().unwrap();
         delay.delay_ms(50)
     }
