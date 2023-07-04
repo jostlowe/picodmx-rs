@@ -19,10 +19,12 @@ use bsp::hal::{
     watchdog::Watchdog,
 };
 use embedded_hal::digital::v2::OutputPin;
+use rp_pico::hal::dma::DMAExt;
 
 #[entry]
 fn main() -> ! {
-    info!("Program start");
+
+    // Do all of our regular setup
     let mut pac = pac::Peripherals::take().unwrap();
     let core = pac::CorePeripherals::take().unwrap();
     let mut watchdog = Watchdog::new(pac.WATCHDOG);
@@ -51,16 +53,29 @@ fn main() -> ! {
 
     let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
 
+    // Pick a pin for our DMX output and change it to the proper mode
     let dmx_pin: Pin<_, FunctionPio0> = pins.gpio0.into_mode();
+
+    // Get its `pin_id` for later use
     let dmx_pin_id = dmx_pin.id().num;
+
+    // Get a PIO and a state machine for use in the DMX output
     let (mut pio, sm, _, _, _) = pac.PIO0.split(&mut pac.RESETS);
 
+    // Create the DMX output
     let mut dmx = Dmx::new(&mut pio, sm, dmx_pin_id, &clocks.system_clock).unwrap();
+
+    // Create a led pin that we can blink when the output is working
     let mut led_pin = pins.led.into_push_pull_output();
+
+    // Get a dma channel
+    let dma = pac.DMA.split().ch0;
 
     loop {
         led_pin.set_high().unwrap();
-        dmx.send(0, &[0xff, 0xaa, 0xff, 0xaa]);
+
+        // Send our data woooshing down the line with a 0x00 start code
+        dmx.send(0x00, &[0xff, 0xaa, 0xff, 0xaa]);
         led_pin.set_low().unwrap();
         delay.delay_ms(50)
     }
