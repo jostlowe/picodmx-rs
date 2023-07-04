@@ -7,7 +7,7 @@ use rp_pico as bsp;
 use bsp::hal::clocks::{ClockSource, SystemClock};
 
 use bsp::hal::pio::{
-    PIOBuilder, PIOExt, PinDir, Running, Rx, ShiftDirection, StateMachine, StateMachineIndex, Tx,
+    PIOBuilder, PIOExt, PinDir, Running, ShiftDirection, StateMachine, StateMachineIndex, Tx,
     UninitStateMachine, PIO,
 };
 use bsp::hal::dma::{single_buffer::{Config, Transfer}, Channel, ChannelIndex};
