@@ -72,7 +72,12 @@ fn main() -> ! {
 
         // Send our data woooshing down the line with a 0x00 start code
         dmx.send_blocking(0x00, &[0xff, 0xaa, 0xff, 0xaa]);
+
         led_pin.set_low().unwrap();
+
+        // To not tangle up dmx frames, the loop is throttled to run only once every 50ms. You can
+        // try to push this lower, but with no guarantee.
+        // Dmx is a bit loosy goosy about that, but this is the recomended speed from the specs.
         delay.delay_ms(50)
     }
 }
