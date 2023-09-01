@@ -2,6 +2,7 @@
 #![no_main]
 
 pub mod dmx_output;
+pub mod dmx_input;
 
 /*
 TODO: Finish comments and documentation
